@@ -1,0 +1,11 @@
+setaf
+1 red
+2 green
+3 yellow
+4 purple
+5 magenta
+6 cyan
+7 white
+8 grey
+
+tput reset
