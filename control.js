@@ -497,10 +497,9 @@ function addBattery(batteryMaster){
 		fg: 'white',
 	  }
 	});
-	createBar(0,2,2,batteryBar, horizontal, 20, 50);
+createBar(0,2,2,batteryBar, 'horizontal', 20, 50,batteryMaster);
 batteryMaster.append(batteryBox);
 batteryMaster.append(titleBattery);
-batteryMaster.append(batteryBar);
 }
 
 // Display any errors
@@ -564,23 +563,23 @@ function clearErrors(){
 
 // helper methods to create lines
 // red and yellow are the limits to switch to the colors
-function createBar(val,x,y,bar,orientation, red,yellow){
-	if (val < 0) newBar('red',0,x,y,bar,orientation); // deal with <0 numbers
+function createBar(val,x,y,bar,orientation, red,yellow,master){
+	if (val < 0) newBar('red',0,x,y,bar,orientation,master); // deal with <0 numbers
 	if (val < 20){
-		newBar('red',val,x,y,bar,orientation);
+		newBar('red',val,x,y,bar,orientation,master);
 	}
 	else if(val < 70){
-		newBar('yellow',val,x,y,bar,orientation);
+		newBar('yellow',val,x,y,bar,orientation,master);
 	}
 	else if(val < 100) {
-		newBar('green',val,x,y,bar,orientation);
+		newBar('green',val,x,y,bar,orientation,master);
 	}
 	else{
-		newBar('green',100,x,y,bar,orientation);
+		newBar('green',100,x,y,bar,orientation,master);
 	}	
 }
 
-function newBar(col, val, x, y,bar, orientation){
+function newBar(col, val, x, y,bar, orientation, master){
 	var width, height;
 	if(orientation == 'horizontal'){
 		width = 20;
@@ -596,7 +595,7 @@ function newBar(col, val, x, y,bar, orientation){
 		top: x,
 		left: y,
 		border: 'line',
-		orientation: orientation;
+		orientation: orientation,
 		style: {
 			fg: 'black',
 			bg: 'black',
@@ -606,13 +605,13 @@ function newBar(col, val, x, y,bar, orientation){
 			},
 			border: {
 				fg: 'default',
-				bg: 'black'
+				bg: 'default'
 			}
 		},
 		
-		width: width
+		width: width,
 		height: height,
 		filled: val,
 	});
-	screen.append(bar);
+	master.append(bar);
 }
