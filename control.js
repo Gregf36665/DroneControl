@@ -24,9 +24,11 @@ var errorBox;
 
 // Master boxes that must be updated
 var batteryMaster;
+var altMaster;
 
 // bars that are used
 var batteryBar;
+var altBar;
 
 drone.on('navdata',getData);
 // Initialize the library
@@ -246,30 +248,35 @@ function initDisplay(){
 		}
 	});
 
-	// Progress bar
-	var barThing = blessed.ProgressBar({
-		top: 4,
-		left: 8,
-		width: 10,
-		height: 4,
-		filled: 50,
+	// Altitude window
+	altMaster = blessed.box({
+		top: 20,
+		left: 80,
+		width: 22,
+		height: 20,
+		tags: true,
+		border: {
+			type: 'line'
+		},
 		style: {
-			bar: {
+			border: {
 					fg: '#ffffff'
 			}
 		}
 	});
 
+	
 	addRoll(rotationMaster);
 	addCamera(cameraMaster);
 	addSpeed(velocityMaster);
 	addBattery(batteryMaster);
+	addAlt(altMaster);
 
 	screen.append(rotationMaster);
 	screen.append(cameraMaster);
 	screen.append(velocityMaster);
 	screen.append(batteryMaster);
-	screen.append(barThing);
+	screen.append(altMaster);
 
 	// Render the screen.
 	screen.render();
@@ -508,6 +515,35 @@ batteryMaster.append(batteryBox);
 batteryMaster.append(titleBattery);
 }
 
+// add in altitude status
+function addAlt(altMaster){
+	var titleAlt= blessed.text({
+	  top: 0,
+	  left: 6,
+	  width: 8,
+	  height: 1,
+	  content: '{bold}Altitude{/bold}',
+	  tags: true,
+	  style: {
+		fg: 'white',
+	  }
+	});
+	altBox= blessed.text({
+	  top:  1,
+	  left: 8,
+	  width: 4,
+	  height: 1,
+	  content: '000m',
+	  tags: true,
+	  style: {
+		fg: 'white',
+	  }
+	});
+createBar(0,2,0,altBar, 'vertical', 20, 50,altMaster,20);
+altMaster.append(altBox);
+altMaster.append(titleAlt);
+}
+
 // Display any information
 function info(val){
 	setTimeout(clearErrors, 5000); // clear the error after 5 seconds
@@ -530,7 +566,7 @@ function info(val){
 
 // Display any errors
 function error(val){
-	setTimeout(clearErrors, 5000); // clear the error after 5 seconds
+	setTimeout(clearErrors, 10000); // clear the error after 10 seconds
 	errorBox= blessed.text({
 	top:  screen.height-2,
 	left: 'center',
@@ -550,7 +586,7 @@ function error(val){
 
 // Display any warnings
 function warn(val){
-	setTimeout(clearErrors, 3000); // clear the error after 5 seconds
+	setTimeout(clearErrors, 3000); // clear the error after 3 seconds
 	errorBox= blessed.text({
 	top:  screen.height-2,
 	left: 'center',
