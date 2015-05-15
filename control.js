@@ -157,9 +157,9 @@ function getData(val){
 		batteryBox.setContent(str);
 		
 		// Velocity
-		xVbox.setContent(helper.xVelocity);
-		yVbox.setContent(helper.yVelocity);
-		zVbox.setContent(helper.zVelocity);
+		xVbox.setContent(""+helper.xVelocity);
+		yVbox.setContent(""+helper.yVelocity);
+		zVbox.setContent(""+helper.zVelocity);
 
 		// Rotation
 
@@ -178,7 +178,7 @@ function getData(val){
 
 function initDisplay(){
 
-// camera status window
+	// camera status window
 	var cameraMaster= blessed.box({
 		top: 40,
 		left: 40,
@@ -195,7 +195,7 @@ function initDisplay(){
 		}
 	});
 
-// Rotation window
+	// Rotation window
 	var rotationMaster= blessed.box({
 		top: 10,
 		left: 20,
@@ -212,7 +212,7 @@ function initDisplay(){
 		}
 	});
 
-// Velocity window
+	// Velocity window
 	var velocityMaster= blessed.box({
 		top: 10,
 		left: 50,
@@ -229,7 +229,7 @@ function initDisplay(){
 		}
 	});
 
-// Battery window
+	// Battery window
 	batteryMaster= blessed.box({
 		top: 20,
 		left: 50,
@@ -246,7 +246,7 @@ function initDisplay(){
 		}
 	});
 
-// Progress bar
+	// Progress bar
 	var barThing = blessed.ProgressBar({
 		top: 4,
 		left: 8,
@@ -260,19 +260,19 @@ function initDisplay(){
 		}
 	});
 
-addRoll(rotationMaster);
-addCamera(cameraMaster);
-addSpeed(velocityMaster);
-addBattery(batteryMaster);
+	addRoll(rotationMaster);
+	addCamera(cameraMaster);
+	addSpeed(velocityMaster);
+	addBattery(batteryMaster);
 
-screen.append(rotationMaster);
-screen.append(cameraMaster);
-screen.append(velocityMaster);
-screen.append(batteryMaster);
-screen.append(barThing);
+	screen.append(rotationMaster);
+	screen.append(cameraMaster);
+	screen.append(velocityMaster);
+	screen.append(batteryMaster);
+	screen.append(barThing);
 
-// Render the screen.
-screen.render();
+	// Render the screen.
+	screen.render();
 }
 
 // add in rotation information
@@ -348,7 +348,7 @@ function addRoll(rotationMaster){
 	  left: 9,
 	  width: 7,
 	  height: 1,
-	  content: '0.000',
+	  content: '0.0000',
 	  tags: true,
 	  style: {
 		fg: 'white',
