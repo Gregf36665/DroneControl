@@ -22,17 +22,15 @@ var altBox;
 var batteryBox;
 var errorBox;
 
-// data bars that get updated
+// Master boxes that must be updated
+var batteryMaster;
+
+// bars that are used
 var batteryBar;
-
-
 
 drone.on('navdata',getData);
 // Initialize the library
 gamepad.init();
-clearErrors();
-
-
 
 // set variables up
 var flying = false;
@@ -45,6 +43,13 @@ setInterval(gamepad.detectDevices, 500);
 
 //clear the window and set it up
 initDisplay();
+
+// Check that the drone is connectied
+var exec = require('child_process').exec, child;
+child = exec('ping -c 1 192.168.1.1', function(errors, stdout, stderr){
+		if(errors !== null) error("Not connected to drone!");
+		else info("Connected to drone");
+});
 
 // Listen for move events on all gamepads
 gamepad.on("move", function (id, axis, value) {
@@ -147,6 +152,7 @@ function getData(val){
 		
 		// Battery
 		var str = helper.batteryPercentage;
+		createBar(str,2,0,batteryBar, 'horizontal', 20, 50,batteryMaster,20);
 		str = str + "%";
 		batteryBox.setContent(str);
 		
@@ -224,11 +230,11 @@ function initDisplay(){
 	});
 
 // Battery window
-	var batteryMaster= blessed.box({
+	batteryMaster= blessed.box({
 		top: 20,
 		left: 50,
-		width: 10,
-		height: 4,
+		width: 22,
+		height: 5,
 		tags: true,
 		border: {
 			type: 'line'
@@ -477,7 +483,7 @@ speedMaster.append(zVbox);
 function addBattery(batteryMaster){
 	var titleBattery= blessed.text({
 	  top: 0,
-	  left: 0,
+	  left: 6,
 	  width: 8,
 	  height: 1,
 	  content: '{bold}Battery{/bold}',
@@ -488,7 +494,7 @@ function addBattery(batteryMaster){
 	});
 	batteryBox = blessed.text({
 	  top:  1,
-	  left: 2,
+	  left: 8,
 	  width: 4,
 	  height: 1,
 	  content: '00%',
@@ -497,9 +503,29 @@ function addBattery(batteryMaster){
 		fg: 'white',
 	  }
 	});
-createBar(0,2,2,batteryBar, 'horizontal', 20, 50,batteryMaster);
+createBar(0,2,0,batteryBar, 'horizontal', 20, 50,batteryMaster,20);
 batteryMaster.append(batteryBox);
 batteryMaster.append(titleBattery);
+}
+
+// Display any information
+function info(val){
+	setTimeout(clearErrors, 5000); // clear the error after 5 seconds
+	errorBox= blessed.text({
+	top:  screen.height-2,
+	left: 'center',
+	width: 40,
+	height: 1,
+	content: val,
+	tags: true,
+	align: 'center',
+	style: {
+		fg: 'white',
+		bg: 'green',
+	}
+	});
+	screen.append(errorBox);
+	screen.render();
 }
 
 // Display any errors
@@ -522,7 +548,7 @@ function error(val){
 	screen.render();
 }
 
-// Display any errors
+// Display any warnings
 function warn(val){
 	setTimeout(clearErrors, 3000); // clear the error after 5 seconds
 	errorBox= blessed.text({
@@ -563,38 +589,38 @@ function clearErrors(){
 
 // helper methods to create lines
 // red and yellow are the limits to switch to the colors
-function createBar(val,x,y,bar,orientation, red,yellow,master){
-	if (val < 0) newBar('red',0,x,y,bar,orientation,master); // deal with <0 numbers
+function createBar(val,x,y,bar,orientation, red,yellow,master, size){
+	if (val < 0) newBar('red',0,x,y,bar,orientation,master,size); // deal with <0 numbers
 	if (val < 20){
-		newBar('red',val,x,y,bar,orientation,master);
+		newBar('red',val,x,y,bar,orientation,master,size);
 	}
 	else if(val < 70){
-		newBar('yellow',val,x,y,bar,orientation,master);
+		newBar('yellow',val,x,y,bar,orientation,master,size);
 	}
 	else if(val < 100) {
-		newBar('green',val,x,y,bar,orientation,master);
+		newBar('green',val,x,y,bar,orientation,master,size);
 	}
 	else{
-		newBar('green',100,x,y,bar,orientation,master);
+		newBar('green',100,x,y,bar,orientation,master,size);
 	}	
 }
 
-function newBar(col, val, x, y,bar, orientation, master){
+function newBar(col, val, x, y,bar, orientation, master, size){
 	var width, height;
 	if(orientation == 'horizontal'){
-		width = 20;
-		height = 5;
+		width = size;
+		height = 1;
 	}
 	else{
 		orientation='vertical';
 		width = 5;
-		height = 20;
+		height = size;
 	}
 	
 	bar= blessed.ProgressBar({
 		top: x,
 		left: y,
-		border: 'line',
+//		border: 'line',
 		orientation: orientation,
 		style: {
 			fg: 'black',
