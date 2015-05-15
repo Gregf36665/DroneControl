@@ -78,11 +78,9 @@ gamepad.on("up", function (id, num) {
 // Move to the left and right
 function leftRight(amount){
 	if(amount<0){
-		//console.log("Translating left by %d",-amount);
 		drone.left(-amount);
 	}
 	else{
-		//console.log("Translating right by %d",amount);
 		drone.right(amount);
 	}
 }
@@ -90,33 +88,27 @@ function leftRight(amount){
 function upDown(amount){
 	if(Math.abs(amount)<0.1) return; // get rid of any noise
 	if(amount>0){
-		//console.log("Going down by %d",amount);
 		drone.down(amount);
 	}
 	else{
-		//console.log("Going up by %d",-amount);
 		drone.up(-amount);
 	}
 }
 
 function forwardBack(amount){
 	if(amount>0){
-		//console.log("Going back by %d",amount);
 		drone.back(amount);
 	}
 	else{
-		//console.log("Going forward by %d",-amount);
 		drone.front(-amount);
 	}
 }
 
 function clockwiseCounterclock(amount){
 	if(amount>0){
-		//console.log("Rotating right by %d",amount);
 		drone.clockwise(amount);
 	}
 	else{
-		//console.log("Rotating left by %d",-amount);
 		drone.counterClockwise(-amount);
 	}
 }
@@ -171,6 +163,8 @@ function getData(val){
 		pitchStatusBox.setContent(str);
 		str = "" + helper.clockwiseDegrees;
 		yawStatusBox.setContent(str);
+
+		altBox.setContent(""+helper.altitude);
 
 
 		// Render the screen
@@ -252,8 +246,8 @@ function initDisplay(){
 	altMaster = blessed.box({
 		top: 20,
 		left: 80,
-		width: 22,
-		height: 20,
+		width: 7,
+		height: 24,
 		tags: true,
 		border: {
 			type: 'line'
@@ -519,10 +513,10 @@ batteryMaster.append(titleBattery);
 function addAlt(altMaster){
 	var titleAlt= blessed.text({
 	  top: 0,
-	  left: 6,
-	  width: 8,
+	  left: 1,
+	  width: 3,
 	  height: 1,
-	  content: '{bold}Altitude{/bold}',
+	  content: '{bold}Alt{/bold}',
 	  tags: true,
 	  style: {
 		fg: 'white',
@@ -530,16 +524,16 @@ function addAlt(altMaster){
 	});
 	altBox= blessed.text({
 	  top:  1,
-	  left: 8,
+	  left: 1,
 	  width: 4,
 	  height: 1,
-	  content: '000m',
+	  content: '0000',
 	  tags: true,
 	  style: {
 		fg: 'white',
 	  }
 	});
-createBar(0,2,0,altBar, 'vertical', 20, 50,altMaster,20);
+createBar(99,2,0,altBar, 'vertical', 10, 20,altMaster,20);
 altMaster.append(altBox);
 altMaster.append(titleAlt);
 }
