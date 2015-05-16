@@ -70,9 +70,11 @@ gamepad.on("up", function (id, num) {
 	switch(num){
 	case 0: takeOffLand(); break;
 	case 1: changeCamera(); break;
+	case 3:  drone.stop();
 	default: warn("Unknown button"); break;
 	}
 });
+
 
 
 // Move to the left and right
@@ -145,10 +147,7 @@ function getData(val){
 		var helper = val.demo;
 		
 		// Battery
-		var str = helper.batteryPercentage;
-		createBar(str,2,0,batteryBar, 'horizontal', 20, 50,batteryMaster,20);
-		str = str + "%";
-		batteryBox.setContent(str);
+		updateBat(helper.batteryPercentage);
 		
 		// Velocity
 		xVbox.setContent(""+helper.xVelocity);
@@ -164,8 +163,9 @@ function getData(val){
 		str = "" + helper.clockwiseDegrees;
 		yawStatusBox.setContent(str);
 
-		altBox.setContent(""+helper.altitude);
 
+		// Altitude
+		updateAlt(helper.altitude);
 
 		// Render the screen
 		screen.render();
@@ -538,6 +538,20 @@ altMaster.append(altBox);
 altMaster.append(titleAlt);
 }
 
+// Update altitude 
+function updateAlt(val){
+	altBox.setContent(""+val);
+	if(val<0.5) createBar(val*200,2,0,altBar, 'vertical', 99, 20,altMaster,20);
+	else if(val<1) createBar(val*100,2,0,altBar, 'vertical', 00, 99,altMaster,20);
+	else createBar(val*10,2,0,altBar, 'vertical', 0, 0,altMaster,20);
+}
+
+// Update battery
+function updateBat(val){
+		createBar(val,2,0,batteryBar, 'horizontal', 20, 50,batteryMaster,20);
+		batteryBox.setContent(""+val+"%");
+
+}
 // Display any information
 function info(val){
 	setTimeout(clearErrors, 5000); // clear the error after 5 seconds
@@ -621,10 +635,10 @@ function clearErrors(){
 // red and yellow are the limits to switch to the colors
 function createBar(val,x,y,bar,orientation, red,yellow,master, size){
 	if (val < 0) newBar('red',0,x,y,bar,orientation,master,size); // deal with <0 numbers
-	if (val < 20){
+	if (val < red){
 		newBar('red',val,x,y,bar,orientation,master,size);
 	}
-	else if(val < 70){
+	else if(val < yellow){
 		newBar('yellow',val,x,y,bar,orientation,master,size);
 	}
 	else if(val < 100) {
