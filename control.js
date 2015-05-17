@@ -80,7 +80,7 @@ gamepad.on("up", function (id, num) {
 	switch(num){
 	case 0: takeOffLand(); break;
 	case 1: changeCamera(); break;
-	case 3:  drone.stop();
+	case 3:  drone.stop(); break;
 	default: warn("Unknown button"); break;
 	}
 });
