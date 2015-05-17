@@ -1,6 +1,10 @@
 var gamepad = require("gamepad");
 var ardrone = require("ar-drone");
 var blessed = require("blessed");
+var debugging = (process.argv[2] == '-d');
+if(debugging){
+	console.error('debugging active.  Make sure this is being redirected');
+}
 
 var drone = ardrone.createClient();
 var screen = blessed.screen({
@@ -43,8 +47,14 @@ setInterval(gamepad.processEvents, 16);
 // Scan for new gamepads as a slower rate
 setInterval(gamepad.detectDevices, 500);
 
+// Set the max altitude (in mm)
+drone.config('control:altitude_max',5000);
+
 //clear the window and set it up
 initDisplay();
+
+// Display alert if debugging
+if(debugging) info('debugging active');
 
 // Check that the drone is connectied
 var exec = require('child_process').exec, child;
@@ -143,6 +153,7 @@ function changeCamera(){
 }
 
 function getData(val){
+	if(debugging) consloe.error(val);
 	if(val.demo != null){
 		var helper = val.demo;
 		
