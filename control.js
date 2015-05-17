@@ -48,7 +48,7 @@ setInterval(gamepad.processEvents, 16);
 setInterval(gamepad.detectDevices, 500);
 
 // Set the max altitude (in mm)
-drone.config('control:altitude_max',5000);
+drone.config('control:altitude_max',10000);
 
 //clear the window and set it up
 initDisplay();
@@ -153,7 +153,7 @@ function changeCamera(){
 }
 
 function getData(val){
-	if(debugging) consloe.error(val);
+	if(debugging) console.error(val);
 	if(val.demo != null){
 		var helper = val.demo;
 		
