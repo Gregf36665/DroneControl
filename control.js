@@ -16,6 +16,9 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
 
+// vertical speed (-1 to 1)
+var vs = 0;
+
 // data boxes that get updated
 var cameraStatusBox;
 var rollStatusBox;
@@ -34,6 +37,7 @@ var altMaster;
 var batteryBar;
 var altBar;
 
+// detect information from the drone
 drone.on('navdata',getData);
 // Initialize the library
 gamepad.init();
@@ -63,9 +67,15 @@ child = exec('ping -c 1 192.168.1.1', function(errors, stdout, stderr){
 		else info("Connected to drone");
 });
 
+// adjuct vertical speed every 10 ms
+setInterval(changeVs, 10);
+
 // Listen for move events on all gamepads
 gamepad.on("move", function (id, axis, value) {
-			if(!flying) return; // don't change controls when not flying
+			if(!flying){
+					warn("Drone landed");
+					return; // don't change controls when not flying
+			}
 			switch (axis){
 			case 0: leftRight(value); break;
 			case 1: forwardBack(value);break;
@@ -85,8 +95,6 @@ gamepad.on("up", function (id, num) {
 	}
 });
 
-
-
 // Move to the left and right
 function leftRight(amount){
 	if(amount<0){
@@ -97,13 +105,24 @@ function leftRight(amount){
 	}
 }
 
+// Change the vertials speed
 function upDown(amount){
-	if(Math.abs(amount)<0.1) return; // get rid of any noise
-	if(amount>0){
-		drone.down(amount);
+	if(Math.abs(amount-vs)<0.1) return; // get rid of any noise
+	vs = amount;
+	changeVs();
+}
+
+// change the vertical velocity
+function changeVs(){
+	if(!flying) return;
+	zVbox.setContent(""+-vs);
+	if(vs<0){
+		drone.up(-vs);
+		info("climbing");
 	}
 	else{
-		drone.up(-amount);
+		drone.down(vs);
+		info("descending");
 	}
 }
 
@@ -163,7 +182,6 @@ function getData(val){
 		// Velocity
 		xVbox.setContent(""+helper.xVelocity);
 		yVbox.setContent(""+helper.yVelocity);
-		zVbox.setContent(""+helper.zVelocity);
 
 		// Rotation
 
@@ -675,7 +693,6 @@ function newBar(col, val, x, y,bar, orientation, master, size){
 	bar= blessed.ProgressBar({
 		top: x,
 		left: y,
-//		border: 'line',
 		orientation: orientation,
 		style: {
 			fg: 'black',
