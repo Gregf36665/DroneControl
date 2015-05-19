@@ -121,8 +121,11 @@ function changeVs(){
 	if(vs<0){
 		drone.up(-vs);
 	}
-	else{
+	else if(vs > 0){
 		drone.down(vs);
+	}
+	else{
+		drone.stop();
 	}
 }
 
