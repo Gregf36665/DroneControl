@@ -189,7 +189,7 @@ function getData(val){
 		rollStatusBox.setContent(str);
 		str = "" + helper.frontBackDegrees;
 		pitchStatusBox.setContent(str);
-		str = "" + helper.clockwiseDegrees;
+		str = "" + (helper.clockwiseDegrees+180);
 		yawStatusBox.setContent(str);
 
 
