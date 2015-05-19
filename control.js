@@ -36,6 +36,7 @@ var altMaster;
 // bars that are used
 var batteryBar;
 var altBar;
+var vsBar;
 
 // detect information from the drone
 drone.on('navdata',getData);
@@ -67,8 +68,8 @@ child = exec('ping -c 1 192.168.1.1', function(errors, stdout, stderr){
 		else info("Connected to drone");
 });
 
-// adjuct vertical speed every 10 ms
-setInterval(changeVs, 10);
+// adjuct vertical speed every 16 ms
+setInterval(changeVs, 16);
 
 // Listen for move events on all gamepads
 gamepad.on("move", function (id, axis, value) {
@@ -114,15 +115,14 @@ function upDown(amount){
 
 // change the vertical velocity
 function changeVs(){
-	if(!flying) return;
+	if(!flying) vs = 0; // set the vertical speed to 0 to get good results
 	zVbox.setContent(""+-vs);
+	newBarPN(-vs*100,20,90,vsBar,'vertical',20);
 	if(vs<0){
 		drone.up(-vs);
-		info("climbing");
 	}
 	else{
 		drone.down(vs);
-		info("descending");
 	}
 }
 
@@ -288,6 +288,9 @@ function initDisplay(){
 		}
 	});
 
+	
+	// Vertical speed indicator
+	newBarPN(-100,20,90,vsBar,'vertical',20);
 	
 	addRoll(rotationMaster);
 	addCamera(cameraMaster);
@@ -678,6 +681,7 @@ function createBar(val,x,y,bar,orientation, red,yellow,master, size){
 	}	
 }
 
+// Create a bar of a specefic color
 function newBar(col, val, x, y,bar, orientation, master, size){
 	var width, height;
 	if(orientation == 'horizontal'){
@@ -712,4 +716,84 @@ function newBar(col, val, x, y,bar, orientation, master, size){
 		filled: val,
 	});
 	master.append(bar);
+}
+
+// Create a color coded bar which goes red for <0 numbers
+function newBarPN(val, x, y, bar, orientation, size){
+
+	var col = (val < 0 ? 'red' : 'green');
+
+	var width, height, midWidth, midHeight, xBar, yBar;
+	if(orientation == 'horizontal'){
+		width = size;
+		midWidth = size/2;
+		height = 3;
+		midHeight = 3;
+		xBar = x;
+		yBar = y;
+		if(val < 0){
+			val = -val;
+			yBar = y + midWidth;
+			midWidth*= (val/100);
+			midWidth = Math.round(midWidth);
+			val = 100;
+		}
+	}
+	else{
+		orientation='vertical';
+		width = 4;
+		midWidth = 4;
+		height = size;
+		midHeight = size/2;
+		xBar = x;
+		yBar = y;
+		if(val < 0){
+			val = -val;
+			xBar = x + midHeight;
+			midHeight *= (val/100);
+			midHeight = Math.round(midHeight);
+			val = 100;
+		}
+	}
+
+	var edge = blessed.box({
+		top: x-1,
+		left: y-1,
+		width: width+2,
+		height: height+2,
+		tags: true,
+		border: {
+			type: 'line'
+		},
+		style: {
+			border: {
+					fg: '#ffffff'
+			}
+		}
+	})
+
+		bar= blessed.ProgressBar({
+			top: xBar,
+			left: yBar,
+			orientation: orientation,
+			style: {
+				fg: 'black',
+				bg: 'black',
+				bar: {
+					bg: col,
+					fg: 'default'
+				},
+				border: {
+					fg: 'default',
+					bg: 'black'
+				}
+			},
+			
+			width: midWidth,
+			height: midHeight,
+			filled: val,
+		});
+		screen.append(edge);
+		screen.append(bar);
+		screen.render();
 }
