@@ -2,6 +2,8 @@ var gamepad = require("gamepad");
 var ardrone = require("ar-drone");
 var blessed = require("blessed");
 var debugging = (process.argv[2] == '-d');
+
+
 if(debugging){
 	console.error('debugging active.  Make sure this is being redirected');
 }
@@ -46,6 +48,7 @@ gamepad.init();
 // set variables up
 var flying = false;
 var frontCamera=true;
+var hovering = false;
 
 // Create a game loop and poll for events
 setInterval(gamepad.processEvents, 16);
@@ -68,14 +71,19 @@ child = exec('ping -c 1 192.168.1.1', function(errors, stdout, stderr){
 		else info("Connected to drone");
 });
 
-// adjuct vertical speed every 16 ms
-setInterval(changeVs, 16);
+// adjuct vertical speed every second
+//setInterval(changeVs, 1000);
 
 // Listen for move events on all gamepads
 gamepad.on("move", function (id, axis, value) {
+		value /= 2; // reduce sensitivity
 			if(!flying){
 					warn("Drone landed");
 					return; // don't change controls when not flying
+			}
+			if(hovering){
+					warn("Drone hovering");
+					return; // don't change controls when hovering
 			}
 			switch (axis){
 			case 0: leftRight(value); break;
@@ -91,10 +99,23 @@ gamepad.on("up", function (id, num) {
 	switch(num){
 	case 0: takeOffLand(); break;
 	case 1: changeCamera(); break;
-	case 3:  drone.stop(); break;
+	case 3:  hover(); break;
 	default: warn("Unknown button"); break;
 	}
 });
+
+// Hover the drone
+function hover(){
+	if(hovering){
+		hovering = false;
+		warn("Manual control");
+	}
+	else{
+		hovering = true;
+		drone.stop();
+		warn("Hovering");
+	}
+}
 
 // Move to the left and right
 function leftRight(amount){
@@ -727,6 +748,9 @@ function newBarPN(val, x, y, bar, orientation, size){
 	var col = (val < 0 ? 'red' : 'green');
 
 	var width, height, midWidth, midHeight, xBar, yBar;
+	if(Math.abs(val) < 10){
+		val = val * 10 / Math.abs(val);
+	}
 	if(orientation == 'horizontal'){
 		width = size;
 		midWidth = size/2;
