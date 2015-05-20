@@ -1,6 +1,6 @@
 var blessed = require("blessed");
 
-var x,y,screen;
+var screen;
 
 screen = blessed.screen({
 	autopad: true,
@@ -10,7 +10,6 @@ screen = blessed.screen({
 screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
-
 
 function showText(col, x, y, text, screen){
 var textCol = (col == 'black') ? 'gray' : 'white';
@@ -32,19 +31,6 @@ var titleAlt= blessed.text({
 });
 screen.append(titleAlt);
 screen.render();
-}
-
-var on = 0;
-
-function flash(x,y,text){
-	switch(on){
-		case 0: showText('red',x,y,text,screen); break;
-		case 1: showText('green',x,y,text,screen); break;
-		case 2: showText('yellow',x,y,text,screen); break;
-		default: showText('black',x,y,text,screen); break;
-	}
-	if(on==4) on = 0;
-	else on++;
 }
 
 function flyingBIP(mode){
