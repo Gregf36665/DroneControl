@@ -11,7 +11,17 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
   return process.exit(0);
 });
 
-function showText(col, x, y, text, screen){
+var panel = blessed.box({
+	top: 0,
+	left: 0,
+	width: 52,
+	height: 14,
+	border:{
+		type: 'line'
+	}
+});
+
+function showText(col, x, y, text, master){
 var textCol = (col == 'black') ? 'gray' : 'white';
 
 var titleAlt= blessed.text({
@@ -29,11 +39,12 @@ var titleAlt= blessed.text({
 		bg: col
 	}
 });
-screen.append(titleAlt);
+master.append(titleAlt);
+screen.append(master);
 screen.render();
 }
 
-function flyingBIP(mode){
+function flyingBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',0,0,'Landed',screen); break;
 		case 1: showText('yellow',0,0,'Auto',screen); break;
@@ -43,7 +54,7 @@ function flyingBIP(mode){
 	}
 }
 
-function cameraBIP(mode){
+function cameraBIP(mode,screen){
 	switch(mode){
 		case 0: showText('green',4,0,'Front\nCamera',screen);
 				showText('black',8,0,'Down\nCamera',screen);
@@ -57,7 +68,7 @@ function cameraBIP(mode){
 	}
 }
 
-function batteryBIP(mode){
+function batteryBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',0,10,'Battery\nLow',screen);
 				showText('black',0,20,'Battery\nDead',screen);
@@ -74,7 +85,7 @@ function batteryBIP(mode){
 	}
 }
 
-function hoverBIP(mode){
+function hoverBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',4,10,'Hover',screen); break;
 		case 1: showText('green',4,10,'Hover',screen); break;
@@ -82,7 +93,7 @@ function hoverBIP(mode){
 	}
 }
 
-function angleBIP(mode){
+function angleBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',8,10,'Angle\nRange',screen); break;
 		case 1: showText('red',8,10,'Angle\nRange',screen); break;
@@ -90,7 +101,7 @@ function angleBIP(mode){
 	}
 }
 
-function motorBIP(mode){
+function motorBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',4,20,'Motor',screen); break;
 		case 1: showText('red',4,20,'Motor',screen); break;
@@ -98,7 +109,7 @@ function motorBIP(mode){
 	}
 }
 
-function commBIP(mode){
+function commBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',8,20,'Comm\nFail',screen); break;
 		case 1: showText('yellow',8,20,'Comm\nFail',screen); break;
@@ -107,7 +118,7 @@ function commBIP(mode){
 	}
 }
 
-function warnBIP(mode){
+function warnBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',0,30,'Master\nWarning',screen); break;
 		case 1: showText('yellow',0,30,'Master\nWarning',screen); break;
@@ -115,7 +126,7 @@ function warnBIP(mode){
 	}
 }
 
-function errorBIP(mode){
+function errorBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',0,40,'Master\nError',screen); break;
 		case 1: showText('red',0,40,'Master\nError',screen); break;
@@ -123,7 +134,7 @@ function errorBIP(mode){
 	}
 }
 
-function cutoutBIP(mode){
+function cutoutBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',4,30,'Cutout',screen); break;
 		case 1: showText('red',4,30,'Cutout',screen); break;
@@ -131,7 +142,7 @@ function cutoutBIP(mode){
 	}
 }
 
-function altBIP(mode){
+function altBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',8,30,'Alt\nIssue',screen); break;
 		case 1: showText('yellow',8,30,'Alt\nIssue',screen); break;
@@ -140,7 +151,7 @@ function altBIP(mode){
 	}
 }
 
-function sosBIP(mode){
+function sosBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',4,40,'SOS\nMode',screen); break;
 		case 1: showText('red',4,40,'SOS\nMode',screen); break;
@@ -148,7 +159,7 @@ function sosBIP(mode){
 	}
 }
 
-function windBIP(mode){
+function windBIP(mode,screen){
 	switch(mode){
 		case 0: showText('black',8,40,'Wind',screen); break;
 		case 1: showText('red',8,40,'Wind',screen); break;
@@ -158,91 +169,91 @@ function windBIP(mode){
 
 var flyCount = 0;
 function fly(){
-	flyingBIP(flyCount);
+	flyingBIP(flyCount, panel);
 	if(flyCount==4) flyCount = 0;
 	else flyCount++;
 }
 
 var camCount = 0;
 function cam(){
-	cameraBIP(camCount);
+	cameraBIP(camCount, panel);
 	if(camCount==2) camCount = 0;
 	else camCount++;
 }
 
 var batteryCount=0;
 function batt(){
-	batteryBIP(batteryCount);
+	batteryBIP(batteryCount, panel);
 	if(batteryCount==3) batteryCount = 0;
 	else batteryCount++;
 }
 
 var hoverCount=0;
 function hover(){
-	hoverBIP(hoverCount);
+	hoverBIP(hoverCount, panel);
 	if(hoverCount==3) hoverCount = 0;
 	else hoverCount++;
 }
 
 var motorCount=0;
 function motor(){
-	motorBIP(motorCount);
+	motorBIP(motorCount, panel);
 	if(motorCount==3) motorCount = 0;
 	else motorCount++;
 }
 	
 var angleCount=0;
 function angle(){
-	angleBIP(angleCount);
+	angleBIP(angleCount, panel);
 	if(angleCount==3) angleCount = 0;
 	else angleCount++;
 }
 
 var commCount=0;
 function comm(){
-	commBIP(commCount);
+	commBIP(commCount, panel);
 	if(commCount==3) commCount = 0;
 	else commCount++;
 }
 
 var cutoutCount=0;
 function cutout(){
-	cutoutBIP(cutoutCount);
+	cutoutBIP(cutoutCount, panel);
 	if(cutoutCount==3) cutoutCount = 0;
 	else cutoutCount++;
 }
 
 var altCount=0;
 function alt(){
-	altBIP(altCount);
+	altBIP(altCount, panel);
 	if(altCount==3) altCount = 0;
 	else altCount++;
 }
 
 var windCount=0;
 function wind(){
-	windBIP(windCount);
+	windBIP(windCount, panel);
 	if(windCount==2) windCount = 0;
 	else windCount++;
 }
 
 var sosCount=0;
 function sos(){
-	sosBIP(sosCount);
+	sosBIP(sosCount, panel);
 	if(sosCount==2) sosCount = 0;
 	else sosCount++;
 }
 
 var warnCount=0;
 function warn(){
-	warnBIP(warnCount);
+	warnBIP(warnCount, panel);
 	if(warnCount==2) warnCount = 0;
 	else warnCount++;
 }
 
 var errorCount=0;
 function error(){
-	errorBIP(errorCount);
+	errorBIP(errorCount, panel);
 	if(errorCount==2) errorCount = 0;
 	else errorCount++;
 }
