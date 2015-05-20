@@ -31,6 +31,9 @@ var altBox;
 var batteryBox;
 var errorBox;
 
+//BIP
+var panel;
+
 // Master boxes that must be updated
 var batteryMaster;
 var altMaster;
@@ -320,15 +323,28 @@ function initDisplay(){
 	});
 
 	
+	// BIP
+	panel = blessed.box({
+		top: 10,
+		left: 80,
+		width: 52,
+		height: 14,
+		border:{
+			type: 'line'
+		}
+	});
+
 	// Vertical speed indicator
 	newBarPN(-100,20,90,vsBar,'vertical',20);
 	
+	initBIP(panel);
 	addRoll(rotationMaster);
 	addCamera(cameraMaster);
 	addSpeed(velocityMaster);
 	addBattery(batteryMaster);
 	addAlt(altMaster);
 
+	screen.append(panel);
 	screen.append(rotationMaster);
 	screen.append(cameraMaster);
 	screen.append(velocityMaster);
@@ -830,4 +846,169 @@ function newBarPN(val, x, y, bar, orientation, size){
 		screen.append(edge);
 		screen.append(bar);
 		screen.render();
+}
+
+
+// Create the BIP
+
+function initBIP(screen){
+	flyingBIP(0,screen);
+	batteryBIP(0,screen);
+	cameraBIP(0,screen);
+	hoverBIP(0,screen);
+	angleBIP(0,screen);
+	motorBIP(0,screen);
+	commBIP(0,screen);
+	warnBIP(0,screen);
+	errorBIP(0,screen);
+	cutoutBIP(0,screen);
+	altBIP(0,screen);
+	sosBIP(0,screen);
+	windBIP(0,screen);
+}
+
+function showText(col, x, y, text, master){
+var textCol = (col == 'black') ? 'gray' : 'white';
+
+var titleAlt= blessed.text({
+	top: x,
+	left: y,
+	width: 10,
+	height: 4,
+	content: text,
+	align: 'center',
+		border: {
+			bg: col
+		},
+	style: {
+		fg: textCol,
+		bg: col
+	}
+});
+master.append(titleAlt);
+screen.append(master);
+screen.render();
+}
+
+function flyingBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',0,0,'Landed',screen); break;
+		case 1: showText('yellow',0,0,'Auto',screen); break;
+		case 2: showText('green',0,0,'Flying',screen); break;
+		case 3: showText('green',0,0,'Other\nState',screen); break;
+		default: showText('red',0,0,'Unknown\nOption',screen); break;
+	}
+}
+
+function cameraBIP(mode,screen){
+	switch(mode){
+		case 0: showText('green',4,0,'Front\nCamera',screen);
+				showText('black',8,0,'Down\nCamera',screen);
+				break;
+		case 1: showText('black',4,0,'Front\nCamera',screen);
+				showText('green',8,0,'Down\nCamera',screen);
+				break;
+		default:showText('red',4,0,'Front\nCamera',screen);
+				showText('red',8,0,'Down\nCamera',screen);
+				break;
+	}
+}
+
+function batteryBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',0,10,'Battery\nLow',screen);
+				showText('black',0,20,'Battery\nDead',screen);
+				break;
+		case 1: showText('yellow',0,10,'Battery\nLow',screen);
+				showText('black',0,20,'Battery\nDead',screen);
+				break;
+		case 2: showText('yellow',0,10,'Battery\nLow',screen);
+				showText('red',0,20,'Battery\nDead',screen);
+				break;
+		default: showText('red',0,10,'Battery\nUnknown',screen);
+				showText('red',0,20,'Battery\nUnknown',screen);
+				break;
+	}
+}
+
+function hoverBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',4,10,'Hover',screen); break;
+		case 1: showText('green',4,10,'Hover',screen); break;
+		default: showText('red',4,10,'Unknown\nHover',screen); break;
+	}
+}
+
+function angleBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',8,10,'Angle\nRange',screen); break;
+		case 1: showText('red',8,10,'Angle\nRange',screen); break;
+		default: showText('red',8,10,'Unknown\nAngles',screen); break;
+	}
+}
+
+function motorBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',4,20,'Motor',screen); break;
+		case 1: showText('red',4,20,'Motor',screen); break;
+		default: showText('red',4,20,'Unknown\nMotor',screen); break;
+	}
+}
+
+function commBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',8,20,'Comm\nFail',screen); break;
+		case 1: showText('yellow',8,20,'Comm\nFail',screen); break;
+		case 2: showText('red',8,20,'Comm\nFail',screen); break;
+		default: showText('red',8,20,'Unknown\nComm',screen); break;
+	}
+}
+
+function warnBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',0,30,'Master\nWarning',screen); break;
+		case 1: showText('yellow',0,30,'Master\nWarning',screen); break;
+		default: showText('red',0,30,'Unknown\nWarn',screen); break;
+	}
+}
+
+function errorBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',0,40,'Master\nError',screen); break;
+		case 1: showText('red',0,40,'Master\nError',screen); break;
+		default: showText('red',0,40,'Unknown\nError',screen); break;
+	}
+}
+
+function cutoutBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',4,30,'Cutout',screen); break;
+		case 1: showText('red',4,30,'Cutout',screen); break;
+		default: showText('red',4,30,'Unknown\nCutout',screen); break;
+	}
+}
+
+function altBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',8,30,'Alt\nIssue',screen); break;
+		case 1: showText('yellow',8,30,'Alt\nIssue',screen); break;
+		case 2: showText('red',8,30,'Alt\nIssue',screen); break;
+		default: showText('red',8,30,'Unknown\nAlt',screen); break;
+	}
+}
+
+function sosBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',4,40,'SOS\nMode',screen); break;
+		case 1: showText('red',4,40,'SOS\nMode',screen); break;
+		default: showText('red',4,40,'Unknown\nSOS',screen); break;
+	}
+}
+
+function windBIP(mode,screen){
+	switch(mode){
+		case 0: showText('black',8,40,'Wind',screen); break;
+		case 1: showText('red',8,40,'Wind',screen); break;
+		default: showText('red',8,40,'Unknown\nWind',screen); break;
+	}
 }
