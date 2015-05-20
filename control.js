@@ -99,11 +99,18 @@ gamepad.on("up", function (id, num) {
 	switch(num){
 	case 0: takeOffLand(); break;
 	case 1: changeCamera(); break;
+	case 2: sosDisable(); break;
 	case 3:  hover(); break;
 	default: warn("Unknown button"); break;
 	}
 });
 
+// Disable SOS mode
+function sosDisable(){
+	drone.disableEmergency();
+	warn("SOS disabled");
+}
+	
 // Hover the drone
 function hover(){
 	if(hovering){
