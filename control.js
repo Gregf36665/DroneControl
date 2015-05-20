@@ -22,7 +22,6 @@ screen.key(['escape', 'q', 'C-c'], function(ch, key) {
 var vs = 0;
 
 // data boxes that get updated
-var cameraStatusBox;
 var rollStatusBox;
 var pitchStatusBox;
 var yawStatusBox;
@@ -70,8 +69,10 @@ if(debugging) info('debugging active');
 // Check that the drone is connectied
 var exec = require('child_process').exec, child;
 child = exec('ping -c 1 192.168.1.1', function(errors, stdout, stderr){
-		if(errors !== null) error("Not connected to drone!");
-		else info("Connected to drone");
+		if(errors !== null){
+			errorBIP(1,panel);
+			commBIP(2,panel);
+		}
 });
 
 // adjuct vertical speed every second
@@ -193,12 +194,12 @@ function takeOffLand(){
 
 function changeCamera(){
 	if(frontCamera){
-		cameraStatusBox.setContent("Camera facing downwards");
+		cameraBIP(1,panel);
 		frontCamera=false;
 		drone.config('video:video_channel',3);
 	}
 	else{
-		cameraStatusBox.setContent("Camera facing forward");
+		cameraBIP(0,panel);
 		frontCamera=true;
 		drone.config('video:video_channel',0);
 	}
@@ -237,22 +238,6 @@ function getData(val){
 
 function initDisplay(){
 
-	// camera status window
-	var cameraMaster= blessed.box({
-		top: 40,
-		left: 40,
-		width: 26,
-		height: 4,
-		tags: true,
-		border: {
-			type: 'line'
-		},
-		style: {
-			border: {
-					fg: '#ffffff'
-			}
-		}
-	});
 
 	// Rotation window
 	var rotationMaster= blessed.box({
@@ -325,8 +310,8 @@ function initDisplay(){
 	
 	// BIP
 	panel = blessed.box({
-		top: 10,
-		left: 80,
+		top: 30,
+		left: 10,
 		width: 52,
 		height: 14,
 		border:{
@@ -339,14 +324,12 @@ function initDisplay(){
 	
 	initBIP(panel);
 	addRoll(rotationMaster);
-	addCamera(cameraMaster);
 	addSpeed(velocityMaster);
 	addBattery(batteryMaster);
 	addAlt(altMaster);
 
 	screen.append(panel);
 	screen.append(rotationMaster);
-	screen.append(cameraMaster);
 	screen.append(velocityMaster);
 	screen.append(batteryMaster);
 	screen.append(altMaster);
@@ -441,34 +424,6 @@ rotationMaster.append(titleRotation);
 rotationMaster.append(yawStatusBox);
 rotationMaster.append(rollStatusBox);
 rotationMaster.append(pitchStatusBox);
-}
-
-// add in camera status
-function addCamera(cameraMaster){
-	var titleCamera= blessed.text({
-	  top: 0,
-	  left: 8,
-	  width: 13,
-	  height: 1,
-	  content: '{bold}Camera status{/bold}',
-	  tags: true,
-	  style: {
-		fg: 'white',
-	  }
-	});
-	cameraStatusBox= blessed.text({
-	  top:  1,
-	  left: 0,
-	  width: 24,
-	  height: 1,
-	  content: 'Camera facing forward',
-	  tags: true,
-	  style: {
-		fg: 'white',
-	  }
-	});
-cameraMaster.append(cameraStatusBox);
-cameraMaster.append(titleCamera);
 }
 
 // add in velocity info
