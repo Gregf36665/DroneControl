@@ -23,6 +23,10 @@ Next major change:
 -------------------
 Crosshairs for velocity and rotational information
 
+Track updates:
+--------------
+http://gregf36665.blogspot.com/p/remote-control-overview-spring-semester.html
+
 Known Bugs
 ==========
 
