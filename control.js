@@ -220,7 +220,6 @@ function getData(val){
 		yVbox.setContent(""+helper.yVelocity);
 
 		// Rotation
-
 		str = "" + helper.leftRightDegrees;
 		rollStatusBox.setContent(str);
 		str = "" + helper.frontBackDegrees;
@@ -237,11 +236,24 @@ function getData(val){
 	}
 	if(val.droneState != null){
 		var helper = val.droneState;
-		sosBIP(helper.emergencyLanding,panel);
-		angleBIP(helper.anglesOutOfRange,panel);
+		sosCheck(helper.emergencyLanding,panel);
+		angleCheck(helper.anglesOutOfRange,panel);
 	}
 }
 
+// Logic for if the SOS bip should be lit
+function sosCheck(val){
+	sosBIP(val,panel);
+	if (val != 0) errorBIP(1,panel);
+}
+
+// Logic for if the angle bip should be lit
+function angleCheck(val){
+	angleBIP(val,panel);
+	if (val != 0) errorBIP(1,panel);
+}
+
+// Create a new HUD
 function initDisplay(){
 
 
