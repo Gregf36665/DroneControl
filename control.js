@@ -111,20 +111,22 @@ gamepad.on("up", function (id, num) {
 
 // Disable SOS mode
 function sosDisable(){
+	errorBIP(0,panel);
+	warnBIP(0,panel);
+	screen.render();
 	drone.disableEmergency();
-	warn("SOS disabled");
 }
 	
 // Hover the drone
 function hover(){
 	if(hovering){
 		hovering = false;
-		warn("Manual control");
+		hoverBIP(0,panel);
 	}
 	else{
 		hovering = true;
 		drone.stop();
-		warn("Hovering");
+		hoverBIP(1,panel);
 	}
 }
 
@@ -203,7 +205,6 @@ function changeCamera(){
 		frontCamera=true;
 		drone.config('video:video_channel',0);
 	}
-	screen.render();
 }
 
 function getData(val){
@@ -233,6 +234,11 @@ function getData(val){
 
 		// Render the screen
 		screen.render();
+	}
+	if(val.droneState != null){
+		var helper = val.droneState;
+		sosBIP(helper.emergencyLanding,panel);
+		angleBIP(helper.anglesOutOfRange,panel);
 	}
 }
 
@@ -841,7 +847,7 @@ var titleAlt= blessed.text({
 	}
 });
 master.append(titleAlt);
-screen.append(master);
+//screen.append(master);
 screen.render();
 }
 
