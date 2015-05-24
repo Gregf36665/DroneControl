@@ -236,8 +236,36 @@ function getData(val){
 	}
 	if(val.droneState != null){
 		var helper = val.droneState;
-		sosCheck(helper.emergencyLanding,panel);
-		angleCheck(helper.anglesOutOfRange,panel);
+		sosCheck(helper.emergencyLanding);
+		angleCheck(helper.anglesOutOfRange);
+		batteryCheck(helper.lowBattery);
+		motorCheck(helper.motorProblem);
+		cutoutCheck(helper.cutoutDetected);
+		windCheck(helper.tooMuchWind);
+		ultrasonicCheck(helper.ultrasonicSensorDeaf);
+	}
+}
+
+// Logic for Ultrasonic sensor
+function ultrasonicCheck(val){
+	altBIP(val,panel);
+	if (val != 0) warnBIP(1,panel);
+}
+
+// Logic for t/o land BIP
+function flyCheck(val){
+	switch(val) {
+		case 'CTRL_LANDED' : flyingBIP(0,panel); break;
+		case 'CTRL_HOVERING':
+				flyingBIP(1,panel);
+				hoverBIP(1,panel);
+				break;
+		case 'CTRL_FLYING' : flyingBIP(2,panel); break;
+		case 'CTRL_TRANS_LANDING' : flyingBIP(4,panel); break;
+		case 'CTRL_TRANS_GOTOFIX' : flyingBIP(1,panel); break;
+		case 'CTRL_TRANS_LOOPING' : flyingBIP(1,panel); break;
+		case 'CTRL_DEFAULT' : flyingBIP(1,panel); break;
+		default: flyingBIP(-1,panel);
 	}
 }
 
@@ -245,6 +273,31 @@ function getData(val){
 function sosCheck(val){
 	sosBIP(val,panel);
 	if (val != 0) errorBIP(1,panel);
+}
+
+// Logic for the wind BIP
+function windCheck(val){
+	windBIP(val,panel);
+	if (val != 0) errorBIP(1,panel);
+}
+
+// Logic for the cutout BIP
+function cutoutCheck(val){
+	cutoutBIP(val,panel);
+	if (val != 0) errorBIP(1,panel);
+}
+
+// Logic for motor failures
+function motorCheck(val){
+	motorBIP(val,panel);
+	if (val != 0) errorBIP(1,panel);
+}
+
+// Logic for if there is a low battery or dead
+function batteryCheck(val){
+	batteryBIP(val,panel);
+	if (val == 2) errorBIP(1,panel);
+	if (val == 1) warnBIP(1,panel);
 }
 
 // Logic for if the angle bip should be lit
@@ -602,6 +655,7 @@ function updateAlt(val){
 function updateBat(val){
 		createBar(val,2,0,batteryBar, 'horizontal', 20, 50,batteryMaster,20);
 		batteryBox.setContent(""+val+"%");
+		if(val<5) batteryCheck(2); // trigger the error light for low power
 
 }
 // Display any information
@@ -869,6 +923,7 @@ function flyingBIP(mode,screen){
 		case 1: showText('yellow',0,0,'Auto',screen); break;
 		case 2: showText('green',0,0,'Flying',screen); break;
 		case 3: showText('green',0,0,'Other\nState',screen); break;
+		case 4: showText('green',0,0,'Landing',screen); break;
 		default: showText('red',0,0,'Unknown\nOption',screen); break;
 	}
 }
